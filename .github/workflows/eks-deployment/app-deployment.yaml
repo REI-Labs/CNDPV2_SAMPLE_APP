@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-app
+  namespace: ingress-nginx
+spec:
+  replicas: 1 # TODO: pass as parameter the number of replicas as needed
+  selector:
+    matchLabels:
+      app: sample-app
+  template:
+    metadata:
+      labels:
+        app: sample-app
+    spec:
+      containers:
+      - name: sample-app
+      #this
+        image: 300359003805.dkr.ecr.us-east-1.amazonaws.com/sample_cndp_v2_template:latest # this
+        ports:
+        - name: http
+          containerPort: 8080

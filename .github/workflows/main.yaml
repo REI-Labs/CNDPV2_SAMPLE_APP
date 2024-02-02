@@ -1,0 +1,119 @@
+name: Sample Service Workflow
+
+on:
+  workflow_call: # This workflow is intended to be called from CNDP Principal workflow
+    # inputs:
+    #   repository:
+    #     required: true
+    #     type: string
+    #   ref:
+    #     required: true
+    #     type: string
+    # secrets:
+    #   AWS_ACCESS_KEY_ID:
+    #     required: true
+    #   AWS_SECRET_ACCESS_KEY:
+    #     required: true
+  workflow_dispatch:
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  # TODO: make it coditional, use the PAT if called from the principal action
+  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+jobs:
+  build_and_test:
+    name: Build and Push 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          # TODO: pass the repo and ref as params to make the process more dynamic
+          repository: "REI-Labs/CNDPV2_SAMPLE_APP"
+          ref: "master"
+          # make sure to modify the code to not use PAT when the action is called independently
+          token: ${{ env.ACCESS_TOKEN }}
+          
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      - name: Build and install 
+        run: |
+          mvn clean install 
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          # this
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Dockerize, Tag, and Push Docker image
+        run: |
+          # TODO: Parameterize ecr repo name 
+          # Create the repository if it does not exist
+          aws ecr describe-repositories --repository-names sample_cndp_v2_template || \
+          aws ecr create-repository --repository-name sample_cndp_v2_template
+          
+          docker build -t sample_cndp_v2_template .
+          docker tag sample_cndp_v2_template:latest ${{ steps.login-ecr.outputs.registry }}/sample_cndp_v2_template:latest
+          docker push ${{ steps.login-ecr.outputs.registry }}/sample_cndp_v2_template:latest
+      - name: Error handling
+        if: failure()
+        run: echo "errors during the build, test, or deploy steps"
+  
+  
+  deploy_to_eks:
+    name: Deploy to EKS
+    needs: build_and_test
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}  
+      CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}  
+      APP_NAME: "my-sample-app"  
+      NAMESPACE: "ingress-nginx" 
+      # this link + repo-name
+      IMAGE_URL: "300359003805.dkr.ecr.us-east-1.amazonaws.com/sample_cndp_v2_template:latest"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          # TODO: pass the repo and ref as params to make the process more dynamic
+          repository: "REI-Labs/CNDPV2_SAMPLE_APP"
+          ref: "master"
+          # make sure to modify the code to not use PAT when the action is called independently
+          token: ${{ env.ACCESS_TOKEN }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          # this
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Generate kubeconfig
+      # this
+        run: aws eks update-kubeconfig --region us-east-1 --name cndpv2-cluster
+
+      - name: Deploy to EKS
+        run: |
+          kubectl apply -f ./.github/workflows/eks-deployment/app-deployment.yaml
+          # Apply the Ingress, if needed
+          kubectl apply -f ./.github/workflows/eks-deployment/app-ingress.yaml
+          kubectl apply -f ./.github/workflows/eks-deployment/app-service.yaml
+          
+          
