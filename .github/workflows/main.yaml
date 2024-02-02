@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           # TODO: pass the repo and ref as params to make the process more dynamic
-          repository: "REI-Labs/CNDPV2_SPRING_BOOT_SAMPLE_APP"
+          repository: "REI-Labs/CNDPV2_SAMPLE_APP"
           ref: "master"
           # make sure to modify the code to not use PAT when the action is called independently
           token: ${{ env.ACCESS_TOKEN }}
@@ -89,7 +89,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           # TODO: pass the repo and ref as params to make the process more dynamic
-          repository: "REI-Labs/CNDPV2_SPRING_BOOT_SAMPLE_APP"
+          repository: "REI-Labs/CNDPV2_SAMPLE_APP"
           ref: "master"
           # make sure to modify the code to not use PAT when the action is called independently
           token: ${{ env.ACCESS_TOKEN }}
