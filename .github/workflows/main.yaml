@@ -21,6 +21,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   # TODO: make it coditional, use the PAT if called from the principal action
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+  
 jobs:
   build_and_test:
     name: Build and Push 
@@ -78,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}  
-      CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}  
+      CLUSTER_NAME: cndpv2-${{ secrets.ENV_NAME }}-cluster
       APP_NAME: "my-sample-app"  
       NAMESPACE: "ingress-nginx" 
       # this link + repo-name
