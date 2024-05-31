@@ -83,7 +83,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}  
-      CLUSTER_NAME: cndpv2-${{ secrets.ENV_NAME }}-cluster
+      # TODO: Get the cluster nae from Principal workflow.
+      CLUSTER_NAME: cndpv2-cluster-${{ secrets.ENV_NAME }}
       APP_NAME: "my-sample-app"  
       NAMESPACE: "ingress-nginx" 
       # this link + repo-name
