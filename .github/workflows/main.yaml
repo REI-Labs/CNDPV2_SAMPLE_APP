@@ -21,7 +21,8 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   # TODO: make it coditional, use the PAT if called from the principal action
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-  CLUSTER_NAME: cndpv2-${{ secrets.ENV_NAME }}-cluster
+  # TODO: Get the cluster nae from Principal workflow instead of repo vars
+  CLUSTER_NAME: ${{vars.CLUSTER_NAME}}-${{secrets.ENV_NAME}}
   
 jobs:
   build_and_test:
