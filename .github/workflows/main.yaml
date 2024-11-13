@@ -55,7 +55,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           # this
-          aws-region: us-east-1
+          aws-region: us-east-2
           
 
       - name: Login to Amazon ECR
@@ -88,7 +88,7 @@ jobs:
       APP_NAME: "my-sample-app"  
       NAMESPACE: "ingress-nginx" 
       # this link + repo-name
-      IMAGE_URL: "300359003805.dkr.ecr.us-east-1.amazonaws.com/sample_cndp_v2_template:latest"
+      IMAGE_URL: "300359003805.dkr.ecr.us-east-2.amazonaws.com/sample_cndp_v2_template:latest"
 
     steps:
       - name: Checkout code
@@ -106,14 +106,14 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           # this
-          aws-region: us-east-1
+          aws-region: us-east-2
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Generate kubeconfig
       # this
-        run: aws eks update-kubeconfig --region us-east-1 --name ${{env.CLUSTER_NAME}}
+        run: aws eks update-kubeconfig --region us-east-2 --name ${{env.CLUSTER_NAME}}
 
       - name: Deploy to EKS
         run: |
