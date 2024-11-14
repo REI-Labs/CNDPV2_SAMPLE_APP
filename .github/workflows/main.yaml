@@ -88,7 +88,7 @@ jobs:
       APP_NAME: "my-sample-app"  
       NAMESPACE: "ingress-nginx" 
       # this link + repo-name
-      IMAGE_URL: "300359003805.dkr.ecr.us-east-2.amazonaws.com/sample_cndp_v2_template:latest"
+      IMAGE_URL: "692859936875.dkr.ecr.us-east-2.amazonaws.com/sample_cndp_v2_template:latest"
 
     steps:
       - name: Checkout code
