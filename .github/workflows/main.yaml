@@ -117,7 +117,6 @@ jobs:
 
       - name: Deploy to EKS
         run: |
-          kubectl rollout restart deployment sample-app -n ingress-nginx
           kubectl apply -f ./.github/workflows/eks-deployment/app-deployment.yaml
           kubectl apply -f ./.github/workflows/eks-deployment/app-service.yaml
           # Apply the Ingress, if needed
