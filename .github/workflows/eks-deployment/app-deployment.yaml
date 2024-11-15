@@ -16,7 +16,7 @@ spec:
       containers:
       - name: sample-app
       # TODO: remove hard coded iage
-        image: 692859936875.dkr.ecr.us-east-2.amazonaws.com/sample_cndp_v2_template:latest
+        image: 300359003805.dkr.ecr.us-east-2.amazonaws.com/sample_cndp_v2_template:latest
         ports:
         - name: http
           containerPort: 8080
